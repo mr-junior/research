@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-  if(4 != argc)
+  if(5 != argc)
   {
     std::cerr << "Incorrect usage.\n"
                  "Usage: " << argv[0] << " [options]" << std::endl;
@@ -15,12 +15,17 @@ int main(int argc, char* argv[])
   std::string input_file_name = boost::lexical_cast<std::string>(argv[1]);
   long long int step_count = boost::lexical_cast<long long int>(argv[2]);
   long long int sigma_start = boost::lexical_cast<long long int>(argv[3]);
-  long long int sigma_steps = step_count - sigma_start;
+  long long int data_step = boost::lexical_cast<long long int>(argv[4]);
+  if(0 == data_step)
+  {
+    data_step = 1;
+  }
+  long long int sigma_steps = (step_count - sigma_start) / data_step;
   std::vector<long long int> cycle_count_vector;
   cycle_count_vector.reserve(sigma_steps);
   std::ifstream input_file;
   input_file.open(input_file_name.c_str());
-	if(false == input_file.is_open())
+	if(!input_file.is_open())
 	{
 		std::cerr << "Can not open file " << input_file_name << std::endl;
 		return -1;
@@ -45,7 +50,7 @@ int main(int argc, char* argv[])
   long long int step = 0;
   long double cycle_count = 0;
 
-  for(long long i = 0; (i <= step_count) && (false == input_file.eof()); ++i)
+  for(long long i = 0; (i <= step_count) && (!input_file.eof()); i += data_step)
   {
     input_file >> step >> cycle_count;
     assert(step == i);
@@ -54,7 +59,7 @@ int main(int argc, char* argv[])
     ++average_count;
     if(average_count == average_delta)
     {
-      average += average_sum / static_cast<double>(step_count);
+      average += average_sum * data_step / static_cast<double>(step_count);
       average_sum = 0;
       average_count = 0;
     }
@@ -73,7 +78,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  average += average_sum / static_cast<double>(step_count);
+  average += average_sum * data_step/ static_cast<double>(step_count);
 
   average_for_sigma += average_for_sigma_sum / static_cast<double>(sigma_steps);
 

@@ -1,12 +1,14 @@
 #!/bin/bash
+
 N=
 p=
 step_count=
 sigma_start=
 mu_values=
 results_directory=
+delta=1
 
-while getopts "N:p:m:w:c:s:": opt
+while getopts "N:p:m:w:c:s:d:": opt
 do
   case "$opt" in
     N) N=$OPTARG;;
@@ -15,6 +17,7 @@ do
     w) results_directory=$OPTARG;;
     c) step_count=$OPTARG;;
     s) sigma_start=$OPTARG;;
+    d) delta=$OPTARG;;
     ?) usage; exit;;
   esac
 done
@@ -32,7 +35,10 @@ OPTIONS:
 EOF
 }
 
-source ~/research/scripts/setup.sh
+script=`readlink -e $0`
+scriptpath=`dirname $script`
+
+TOOL=$scriptpath/../tools/average_sigma/bin/average_sigma_computer.exe
 
 function plot()
 {
@@ -51,8 +57,8 @@ function plot()
 
 for u in ${mu_values[*]}
 do
-	echo "${TOOLS_DIR}/average_sigma/average_sigma_computer.exe $results_directory/N${N}_p${p}_u${u}_T/N${N}_p${p}_u${u}.txt $step_count $sigma_start"
-	output=`${TOOLS_DIR}/average_sigma/average_sigma_computer.exe $results_directory/N${N}_p${p}_u${u}_T/N${N}_p${p}_u${u}.txt $step_count $sigma_start`
+	echo "${TOOL} $results_directory/N${N}_p${p}_u${u}_T/N${N}_p${p}_u${u}.txt $step_count $sigma_start $delta"
+	output=`${TOOL} $results_directory/N${N}_p${p}_u${u}_T/N${N}_p${p}_u${u}.txt $step_count $sigma_start $delta`
   echo "$u $output" | awk -F' ' '{print $1" "$2}' >> $results_directory/average.txt
   echo "$u $output" | awk -F' ' '{print $1" "$3}' >> $results_directory/sigma_average.txt
   echo "$u $output" | awk -F' ' '{print $1" "$4}' >> $results_directory/sigma.txt
