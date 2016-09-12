@@ -1,7 +1,7 @@
 GCC=gcc
-CXXFLAGS=-O3 -std=c++11 -I. 
+CXXFLAGS=-O3 -std=c++11 -I. -fopenmp
 TAG=opt
-LFLAGS=-lstdc++ -lm
+LFLAGS=-lstdc++ -lm -fopenmp
 DIR=objs
 BIN=bin
 SOURCES=$(wildcard *.cpp)

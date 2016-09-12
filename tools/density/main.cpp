@@ -27,6 +27,7 @@ int main(int argc, char** argv)
   in.close();
   double epsilon = std::stod(argv[2]);
   std::vector<int> density(values.size(), 1);
+#pragma omp parallel for
   for(int i = 0; i < values.size(); ++i)
   {
     double value = values[i];
